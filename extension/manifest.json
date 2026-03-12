@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "ShinoGraph",
+  "description": "截图笔记 → AI知识图谱 → 智能问答回顾",
+  "version": "0.1.0",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus",
+    "sidePanel"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
+  "background": {
+    "service_worker": "src/background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/capture.js"],
+      "css": ["src/content/capture.css"]
+    }
+  ],
+  "commands": {
+    "capture-screenshot": {
+      "suggested_key": { "default": "Ctrl+Shift+S", "mac": "Command+Shift+S" },
+      "description": "截图捕获笔记"
+    },
+    "capture-selection": {
+      "suggested_key": { "default": "Ctrl+Shift+E", "mac": "Command+Shift+E" },
+      "description": "捕获选中文本"
+    }
+  }
+}
