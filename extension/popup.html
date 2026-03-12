@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { width: 300px; padding: 16px; font-family: -apple-system, sans-serif; margin: 0; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    .btn { display: block; width: 100%; padding: 10px; margin: 6px 0; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .btn-primary { background: #6366f1; color: white; }
+    .btn-secondary { background: #f1f5f9; color: #334155; }
+    .btn:hover { opacity: 0.9; }
+    .stats { margin-top: 12px; padding: 10px; background: #f8fafc; border-radius: 8px; font-size: 13px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <h1>ShinoGraph</h1>
+  <button class="btn btn-primary" id="captureBtn">截图捕获笔记</button>
+  <button class="btn btn-secondary" id="captureTextBtn">捕获选中文本</button>
+  <button class="btn btn-secondary" id="openSidebar">打开知识面板</button>
+  <div class="stats" id="stats">加载中...</div>
+  <script src="src/popup/popup.js"></script>
+</body>
+</html>
