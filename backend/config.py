@@ -2,11 +2,13 @@
 
 import os
 
-# Anthropic API key — required for AI features
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+# AI Provider (OpenAI-compatible: DashScope/智谱 etc.)
+API_KEY = os.getenv("API_KEY", "")
+PROVIDER_BASE_URL = os.getenv("PROVIDER_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
 
-# Claude model to use (default: claude-sonnet-4-20250514)
-SHINOGRAPH_MODEL = os.getenv("SHINOGRAPH_MODEL", "claude-sonnet-4-20250514")
+# Model settings
+SHINOGRAPH_MODEL = os.getenv("SHINOGRAPH_MODEL", "qwen-vl-plus")          # 视觉模型（解析截图）
+SHINOGRAPH_TEXT_MODEL = os.getenv("SHINOGRAPH_TEXT_MODEL", "qwen-plus")    # 文本模型（问答/解析文本）
 
 # SQLite database path
 SHINOGRAPH_DB = os.getenv("SHINOGRAPH_DB", "shinograph.db")

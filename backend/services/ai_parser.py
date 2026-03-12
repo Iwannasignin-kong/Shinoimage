@@ -1,14 +1,15 @@
-"""AI-powered note parsing service using Claude Vision."""
+"""AI-powered note parsing service using OpenAI-compatible API (DashScope/智谱)."""
 
 import base64
 import json
 import logging
 import os
-from anthropic import Anthropic
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = os.getenv("SHINOGRAPH_MODEL", "claude-sonnet-4-20250514")
+DEFAULT_MODEL = os.getenv("SHINOGRAPH_MODEL", "qwen-vl-plus")
+DEFAULT_TEXT_MODEL = os.getenv("SHINOGRAPH_TEXT_MODEL", "qwen-plus")
 
 PARSE_PROMPT = """你是一个知识图谱构建助手。请分析这段笔记内容，提取以下信息并返回 JSON：
 
@@ -40,42 +41,46 @@ def _extract_json(text: str) -> dict:
 
 
 class AIParser:
-    def __init__(self, api_key: str | None = None, model: str | None = None):
-        self.client = Anthropic(api_key=api_key) if api_key else Anthropic()
-        self.model = model or DEFAULT_MODEL
+    def __init__(self, api_key: str | None = None, base_url: str | None = None, model: str | None = None):
+        self.client = OpenAI(
+            api_key=api_key or os.getenv("API_KEY", ""),
+            base_url=base_url or os.getenv("PROVIDER_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+        )
+        self.vision_model = model or DEFAULT_MODEL
+        self.text_model = os.getenv("SHINOGRAPH_TEXT_MODEL") or DEFAULT_TEXT_MODEL
 
     def parse_image(self, image_data: bytes, media_type: str = "image/png") -> dict:
         """Parse a note screenshot into structured knowledge."""
         b64 = base64.standard_b64encode(image_data).decode("utf-8")
-        response = self.client.messages.create(
-            model=self.model,
+        response = self.client.chat.completions.create(
+            model=self.vision_model,
             max_tokens=2048,
             messages=[{
                 "role": "user",
                 "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64}},
+                    {"type": "image_url", "image_url": {"url": f"data:{media_type};base64,{b64}"}},
                     {"type": "text", "text": PARSE_PROMPT},
                 ],
             }],
         )
-        return _extract_json(response.content[0].text)
+        return _extract_json(response.choices[0].message.content)
 
     def parse_text(self, text: str) -> dict:
         """Parse raw text into structured knowledge."""
-        response = self.client.messages.create(
-            model=self.model,
+        response = self.client.chat.completions.create(
+            model=self.text_model,
             max_tokens=2048,
             messages=[{
                 "role": "user",
                 "content": f"{PARSE_PROMPT}\n\n以下是笔记文本：\n{text}",
             }],
         )
-        return _extract_json(response.content[0].text)
+        return _extract_json(response.choices[0].message.content)
 
     def chat_with_context(self, question: str, context: str) -> str:
         """Answer a question using knowledge graph context."""
-        response = self.client.messages.create(
-            model=self.model,
+        response = self.client.chat.completions.create(
+            model=self.text_model,
             max_tokens=1024,
             messages=[{
                 "role": "user",
@@ -86,4 +91,4 @@ class AIParser:
                 ),
             }],
         )
-        return response.content[0].text
+        return response.choices[0].message.content

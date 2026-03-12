@@ -21,7 +21,7 @@ pip install -r backend/requirements.txt
 
 ```bash
 cp .env.example .env
-# 编辑 .env，填入你的 ANTHROPIC_API_KEY
+# 编辑 .env，填入你的 API_KEY 和 PROVIDER_BASE_URL
 ```
 
 ### 4. 启动后端
